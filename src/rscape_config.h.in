@@ -23,6 +23,7 @@
 #undef RSCAPE_DATA
 
 #undef RFVIEW_VERSION
+#undef RFVIEW_DIR
 
 #undef OS_MAC
 #undef OS_LINUX_X86_64

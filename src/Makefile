@@ -9,12 +9,12 @@ SHELL          = /bin/sh
 # Package information
 #
 PACKAGE         = R-scape
-PACKAGE_VERSION = 2.6.11
+PACKAGE_VERSION = 2.6.14
 PACKAGE_TARNAME = R-scape
 
 RSCAPE          = R-scape
-RSCAPE_VERSION  = 2.6.11
-RSCAPE_DATE     = July 2026
+RSCAPE_VERSION  = 2.6.14
+RSCAPE_DATE     = August 2026
 
 E2MSA           = @E2MSA_NAME@
 E2MSA_VERSION   = 0.1.0
@@ -90,24 +90,24 @@ OS_LINUX_ARM64  :=
 OS_LINUX_X86_64 := 
 OS_MAC          := 1
 
-RFVIEW_URL    = https://github.com/dincarnato/RFviewJS/releases/download/v1.1.3
-RSCAPE_RFVIEW = lib/RFview/RFview-1.1.3
+RFVIEW_URL = https://github.com/dincarnato/RFviewJS/releases/download/v1.1.4
+RFVIEW_DIR = lib/RFview/RFview-1.1.4
 ifeq ($(OS_LINUX_ARM64),1)
    RFVIEWFILE        = RFview-cli_linux_arm64.AppImage
    RSCAPE_RFVIEWFILE = ${RFVIEWFILE}
-   RSCAPE_RFVIEWDIR  = ../${RSCAPE_RFVIEW}/linux_arm64
-   RFVIEWFILE_URL    = ${RFVIEW_URL}/${RFVIEWFILE}.gz
+   RSCAPE_RFVIEWDIR  = ../${RFVIEW_DIR}/linux_arm64
+   RFVIEWFILE_URL    = $(RFVIEW_URL)/$(RFVIEWFILE).gz
 
 else ifeq ($(OS_LINUX_X86_64),1)
    RFVIEWFILE        = RFview-cli_linux_x86_64.AppImage
    RSCAPE_RFVIEWFILE = ${RFVIEWFILE}
-   RSCAPE_RFVIEWDIR  = ../${RSCAPE_RFVIEW}/linux_x86_64
+   RSCAPE_RFVIEWDIR  = ../${RFVIEW_DIR}/linux_x86_64
    RFVIEWFILE_URL    = ${RFVIEW_URL}/${RFVIEWFILE}.gz
 
 else ifeq ($(OS_MAC),1)
    RFVIEWFILE        = RFview_mac.app.tar.gz
    RSCAPE_RFVIEWFILE = RFview.app
-   RSCAPE_RFVIEWDIR  = ../${RSCAPE_RFVIEW}/mac
+   RSCAPE_RFVIEWDIR  = ../${RFVIEW_DIR}/mac
    RFVIEWFILE_URL    = ${RFVIEW_URL}/${RFVIEWFILE}
 endif
 
@@ -271,20 +271,21 @@ install:
 	   mkdir -p $(RSCAPE_RFVIEW) ; \
 	fi
 	if [ "$(OS_LINUX_ARM64)" = "1" ] || [ "$(OS_LINUX_X86_64)" = "1" ]; then \
-           if [ ! -f $(RSCAPE_RFVIEWDIR)/$(RFVIEWFILE).gz ]; then \
+           if [ ! -f $(RSCAPE_RFVIEWDIR)/$(RFVIEWFILE) ]; then \
               echo "Downloading $(RFVIEWFILE).gz... to $(RSCAPE_RFVIEWDIR)/" ; \
               if [ ! -d $(RSCAPE_RFVIEWDIR) ]; then \
                  mkdir -p $(RSCAPE_RFVIEWDIR) ; \
               fi ;\
               $(DOWNLOAD) $(RSCAPE_RFVIEWDIR)/$(RFVIEWFILE).gz $(RFVIEWFILE_URL) ; \
+	      gunzip $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE}.gz ; \
+	      chmod 755 $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE} ;\
            else \
-              echo "$(RSCAPE_RFVIEWDIR)/$(RFVIEWFILE).gz already exists, skipping download" ; \
+              echo "$(RSCAPE_RFVIEWDIR)/$(RFVIEWFILE) already exists, skipping download" ; \
            fi ;\
-           gunzip $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE}.gz ; \
-	   chmod 755 $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE} ;\
-           $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE} --appimage-extract ; \
-           gzip $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE} ; \
-        elif [ "$(OS_MAC)" = "1" ]; then \
+	   if [ ! -f squashfs-root/rfview ]; then \
+	      $(RSCAPE_RFVIEWDIR)/${RFVIEWFILE} --appimage-extract ; \
+	   fi ;\
+ 	 elif [ "$(OS_MAC)" = "1" ]; then \
 	   if [ ! -d $(RSCAPE_RFVIEWDIR)/$(RSCAPE_RFVIEWFILE) ]; then \
               echo "Downloading $(RFVIEWFILE)..- to $(RSCAPE_RFVIEWDIR)/" ; \
               if [ ! -d $(RSCAPE_RFVIEWDIR) ]; then \
@@ -353,11 +354,11 @@ distclean:
 	-rm -f *.o *~ Makefile.bak core TAGS gmon.out
 	-rm -f cscope.po.out cscope.out cscope.in.out cscope.files
 	-rm Makefile
-	 if [ "$(OS_LINUX_ARM64)" = "1" ] || [ "$(OS_LINUX_X86_64)" = "1" ]; then \
+	if [ "$(OS_LINUX_ARM64)" = "1" ] || [ "$(OS_LINUX_X86_64)" = "1" ]; then \
 	   rm -rf squashfs-root ; \
-	 fi
-	if [ -d $(RSCAPE_RFVIEW) ]; then \
-	   rm -rf  ../$(RSCAPE_RFVIEW) ; \
+	fi
+	if [ -d $(RFVIEW_DIR) ]; then \
+	   rm -rf  ../$(RFVIEW_DIR) ; \
 	fi
 
 

@@ -32,8 +32,8 @@ rfview_Depict(char *rfviewfile, char *omsafile, char *covfile, int nagg, enum ag
   // Find the executable for the OS
   // MAC
 #ifdef OS_MAC
-  esl_sprintf(&package, "%s/../lib/RFview/RFview-%s/mac/RFview.app/Contents/MacOS/RFview", RSCAPE_BIN, RFVIEW_VERSION,
-	      RSCAPE_BIN);
+  esl_sprintf(&package, "%s/../lib/RFview/RFview-%s/mac/RFview.app/Contents/MacOS/RFview",
+	      RSCAPE_BIN, RFVIEW_VERSION);
   
   // LINUX_X86_64
 #elif defined(OS_LINUX_X86_64)
@@ -59,7 +59,8 @@ rfview_Depict(char *rfviewfile, char *omsafile, char *covfile, int nagg, enum ag
 
  
   if (nagg > 1) {
-    printf("%s includes more than one aggregation method. RFview will not use it. Run each aggregation method separately.\n", helixcovfile);
+    printf("%s includes more than one aggregation method. RFview will not use it. Run each aggregation method separately.\n",
+	   helixcovfile);
     if (verbose) esl_sprintf(&args, "%s --incSsEnds --structureFile %s --basePairAnno %s --svg %s --pdf %s",
 			     package, omsafile, covfile, rfviewsvg, rfviewpdf);
     else         esl_sprintf(&args, "%s --incSsEnds --structureFile %s --basePairAnno %s --svg %s --pdf %s >/dev/null",
@@ -78,9 +79,8 @@ rfview_Depict(char *rfviewfile, char *omsafile, char *covfile, int nagg, enum ag
 			       package, omsafile, covfile, helixcovfile, rfviewsvg, rfviewpdf);
   }
   
- 
-  status = system(args);
   if (1||verbose) printf("%s\n", args);
+  status = system(args);
   if (status == -1) ESL_XFAIL(status, errbuf, "Failed to run RFview\n");
   
   free(rfviewpdf);

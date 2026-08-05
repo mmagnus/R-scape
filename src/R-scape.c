@@ -1724,20 +1724,35 @@ null_rscape(ESL_GETOPTS *go, struct cfg_s *cfg, int nshuffle, ESL_MSA *msa, RANK
 }
 
 // cheks for unbalanced base pairs.
-// Returns error if  unbalanced brakets are present in the inout SS_cons
+// Returns error if  unbalanced brakets are present in the  SS_cons
 static int
 original_msa_check_SS_cons(ESL_MSA **omsa)
 {
   ESL_MSA *msa = *omsa;
+  int     *ct = NULL;
   int      is_simple = FALSE;
+  int      status;
 
-  if (!msa->ss_cons) return eslOK;
+  // add an empty ss_cons if no structure is provided with the aligment
+  if (!msa->ss_cons) {
+    ESL_ALLOC(ct,           sizeof(int)*(msa->alen+1));
+    ESL_ALLOC(msa->ss_cons, sizeof(int)*msa->alen);
+    esl_vec_ISet(ct, msa->alen+1, 0);
+    status = esl_ct2wuss(ct, msa->alen, msa->ss_cons);
+    free(ct);
+    return eslOK;
+  }
   
   if (esl_wuss_IsSimple(msa->ss_cons, msa->alen)) is_simple = TRUE;
   else if (! esl_wuss_IsFull  (msa->ss_cons, msa->alen))
     esl_fatal("\nError: the input alignment's SS_cons has broken pairs.");
 
+  if (ct) free(ct);
   return eslOK;
+
+ ERROR:
+  if (ct) free(ct);
+  return status;
 }
 
 static int
@@ -2997,13 +3012,20 @@ write_omsa_CaCoFold(struct cfg_s *cfg, int L, CTLIST *foldctlist, int verbose)
   int       n_rm = 0;  // number of RMs
   int       s;
   int       i;
+  int       n;
   int       status;
 
-  // initialize
+  // initialize clean SS_cons and GC tags
   if (omsa->ss_cons == NULL) 
     ESL_ALLOC(omsa->ss_cons, sizeof(char)*(OL+1));
   omsa->ss_cons[0] = '\0';
-
+  
+  for (n = 0; n < omsa->ngc; n ++) {
+    free(omsa->gc[n]);
+    free(omsa->gc_tag[n]);
+  }  
+  omsa->ngc = 0;
+    
   // the main nested structure (s=0) is annotated as SS_cons
   // The rest of the motifs are annotated as SS_cons_xx, SS_cons_yy
   //
