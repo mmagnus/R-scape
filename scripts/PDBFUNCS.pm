@@ -4186,8 +4186,8 @@ sub sq_conversion {
     my $new = "";
     my $aa;
 
-    while ($seq) {
-	$seq =~ s/^(\S+)\s+//; $aa = $1;
+    while ($seq =~ s/^(\S+)(?:\s+|$)//) {
+	$aa = $1;
 	$new .= aa_conversion($aa, $isrna);
     }
     $$ret_seq = $new;

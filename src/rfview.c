@@ -32,7 +32,7 @@ rfview_Depict(char *rfviewfile, char *omsafile, char *covfile, int nagg, enum ag
   // Find the executable for the OS
   // MAC
 #ifdef OS_MAC
-  esl_sprintf(&package, "%s/../lib/RFview/RFview-%s/mac/RFview.app/Contents/MacOS/RFview",
+  esl_sprintf(&package, "%s/../lib/RFview/RFview-%s/mac/RFview_mac.app/Contents/MacOS/RFview",
 	      RSCAPE_BIN, RFVIEW_VERSION);
   
   // LINUX_X86_64

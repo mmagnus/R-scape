@@ -134,3 +134,7 @@ R-scape v2.6.12 July 2026
 R-scape v2.6.14 August 2026
 	Clean up the xxx.cacofold.sto alignment, which kept all SS_cons_xx from the original structural annotation.
 	Fix bug assigning an empty SS_cons to an input alignment without SS_cons
+
+R-scape v2.6.15 August 2026
+	RFview v1.1.5 (draws alignments w/o structure)
+	Fixed a type in reading a pdb file
